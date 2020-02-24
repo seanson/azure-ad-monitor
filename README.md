@@ -1,5 +1,7 @@
 # azure-ad-monitor
 
+![azure searching logo](./logo.png)
+
 This is a utility intended to export some custom Azure Active Directory information out as Prometheus Metrics.
 
 It currently only supports exposing Azure AD Application Secret expiry times.
