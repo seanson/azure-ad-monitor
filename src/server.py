@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-import creds
+import logging
+import os
 
 from flask import Flask
 from flask_apscheduler import APScheduler
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app
 from prometheus_client.core import REGISTRY
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
+import creds
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 
 class Config(object):
@@ -32,3 +37,10 @@ app_dispatch = DispatcherMiddleware(app, {"/metrics": make_wsgi_app()})
 @scheduler.task("interval", id="sync_stats_1", seconds=600, misfire_grace_time=900)
 def sync_stats():
     cred_collector.cred_update()
+
+
+@app.route("/reload")
+def reload_stats():
+    # An endpoint for manually triggering an update
+    cred_collector.cred_update()
+    return "OK"

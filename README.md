@@ -12,14 +12,35 @@ Azure AD is a wonderful tool for setting up Single Sign On applications. These a
 
 The goal of this project is to provide a Prometheus metric in order to allow long term tracking, dashboarding and alerting of these credential expiry times and hopefully prevent future production incidents.
 
+## Usage
+
+### Running
+
+This requires the following environment variables set:
+
+- `TENANT_ID`: Global tenant ID for AD
+- `CLIENT_ID`: The client ID for the configured App Registration
+- `CLIENT_SECRET`: The client secret for the configured App Registration
+
+The full list of applications will be queried every 10 minutes.
+
+### Azure Permissions
+
+This requires a Service Priniciple on Azure with the following permissions:
+
+- Microsoft Graph `Application.Read.All`
+
 ## Development
 
 This project uses Python [Poetry](https://python-poetry.org/) for local installation.
 
 `poetry install`
 
+If the above environment variables are not configured this will fall back to using your credentials from `az login`.
+
 ## TODO
 
 - [ ] Kubernetes YAML in `deploy` to deploy the service
 - [ ] Kubernetes YAML for Prometheus Operator rules / alerts
+- [ ] Hashicorp Vault support
 - [ ] Some tests

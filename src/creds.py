@@ -1,30 +1,57 @@
 import logging
 from datetime import datetime
 from operator import attrgetter
+from os import environ
 
 import pytz
-from azure.common.credentials import get_azure_cli_credentials
+from azure.common.credentials import (
+    ServicePrincipalCredentials,
+    get_azure_cli_credentials,
+)
 from azure.graphrbac import GraphRbacManagementClient
 from prometheus_client.core import GaugeMetricFamily
 
 logger = logging.getLogger(__name__)
 
 
+def get_azure_client():
+    client_id = environ.get("CLIENT_ID", "")
+    client_secret = environ.get("CLIENT_SECRET", "")
+    tenant_id = environ.get("TENANT_ID", "")
+    if client_id and client_secret and tenant_id:
+        logger.info(
+            "Found credentials in environment variables, using service principle for auth"
+        )
+        credentials = ServicePrincipalCredentials(
+            tenant=tenant_id,
+            client_id=client_id,
+            secret=client_secret,
+            resource="https://graph.windows.net",
+        )
+        return GraphRbacManagementClient(credentials, tenant_id)
+
+    try:
+        credentials, _, tenant_id = get_azure_cli_credentials(
+            resource="https://graph.windows.net", with_tenant=True
+        )
+    except FileNotFoundError:
+        logger.fatal(
+            "Failed to find Azure credentials. Please configure environment variables or an az login JSON."
+        )
+        raise
+    return GraphRbacManagementClient(credentials, tenant_id)
+
+
 def get_credential_expiry():
     # Query the Graph endpoint for a list of applications and get their credentials
     data = {}
 
-    # Build our client from environment credentials
-    # TODO: Environment credentials
-    cred, _, tenant_id = get_azure_cli_credentials(
-        resource="https://graph.windows.net", with_tenant=True
-    )
-    client = GraphRbacManagementClient(cred, tenant_id)
+    client = get_azure_client()
 
     # Cast to a list to avoid paging
     result = list(client.applications.list())
 
-    logger.warning("Querying %d applications for credentials", len(result))
+    logger.info("Querying %d applications for credentials", len(result))
     start_time = datetime.now()
     today = datetime.utcnow().replace(tzinfo=pytz.utc)
 
