@@ -1,7 +1,9 @@
 import logging
+import json
+
 from datetime import datetime
 from operator import attrgetter
-from os import environ
+from os import environ, path
 
 import pytz
 from azure.common.credentials import (
@@ -74,10 +76,17 @@ def get_credential_expiry():
 
 
 class CredentialCollector:
-    credentials = {}
+    def _get_credentials(self):
+        if not path.exists("results.json"):
+            return {}
+        with open("results.json", "r") as result_file:
+            return json.load(result_file)
 
     def cred_update(self):
-        self.credentials = get_credential_expiry()
+        # Share amongst threads
+        credentials = get_credential_expiry()
+        with open("results.json", "w") as result_file:
+            json.dump(credentials, result_file)
 
     def collect(self):
         c = GaugeMetricFamily(
@@ -86,7 +95,7 @@ class CredentialCollector:
             value=None,
             labels=["app_name", "app_id"],
         )
-        for app_name, values in self.credentials.items():
+        for app_name, values in self._get_credentials().items():
             app_id, expiry = values
             c.add_metric([app_name, app_id], expiry)
         yield c

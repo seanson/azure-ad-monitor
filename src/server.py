@@ -39,6 +39,12 @@ def sync_stats():
     cred_collector.cred_update()
 
 
+@app.route("/health")
+def health():
+    # An endpoint for manually triggering an update
+    return {"status": "ok"}
+
+
 @app.route("/reload")
 def reload_stats():
     # An endpoint for manually triggering an update
