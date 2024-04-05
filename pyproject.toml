@@ -12,7 +12,7 @@ azure-cli-core = "^2.1.0"
 pytz = "^2019.3"
 Flask-APScheduler = "^1.11.0"
 prometheus_client = "^0.7.1"
-uwsgi = "^2.0.18"
+uwsgi = "^2.0.22"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^19.10b0", allow-prereleases = true}
