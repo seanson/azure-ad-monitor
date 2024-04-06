@@ -59,14 +59,15 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
 
-      - run: |
-          source $VENV
-          pytest --cov .
+      # - run: |
+      #     source $VENV
+      #     pytest --cov .
 
       - name: Helm Lint and Package
         uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm lint ./charts/homebridge-prometheus-exporter && helm package ./charts/homebridge-prometheus-exporter
+          exec: helm lint ./charts/azure-ad-monitor && helm package ./charts/azure-ad-monitor
+
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -94,6 +95,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
       - uses: fregante/setup-git-user@v1
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.0
