@@ -1,4 +1,4 @@
-FROM python:3.10-alpine as base
+FROM python:3.12-alpine as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -28,6 +28,6 @@ FROM base as final
 
 RUN apk add --no-cache libffi tzdata
 COPY --from=builder /venv /venv
-COPY uwsgi.ini docker-entrypoint.sh src ./
+COPY uwsgi.ini docker-entrypoint.sh azure-ad-monitor ./
 
 CMD ["./docker-entrypoint.sh"]

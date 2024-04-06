@@ -3,9 +3,10 @@ name = "azure-ad-monitor"
 version = "0.1.0"
 description = ""
 authors = ["Sean Johnson <seanson@users.noreply.github.com>"]
+packages = [{ include = "azure-ad-monitor" }]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 azure-core = "1.2.2"
 azure-graphrbac = "^0.61.1"
 azure-cli-core = "^2.1.0"
@@ -13,9 +14,10 @@ pytz = "^2019.3"
 Flask-APScheduler = "^1.11.0"
 prometheus_client = "^0.7.1"
 uwsgi = "^2.0.18"
+pyyaml = "6.0.1"
 
 [tool.poetry.dev-dependencies]
-black = {version = "^19.10b0", allow-prereleases = true}
+black = { version = "^19.10b0", allow-prereleases = true }
 flake8 = "^3.7.9"
 isort = "^4.3.21"
 
