@@ -28,6 +28,6 @@ FROM base as final
 
 RUN apk add --no-cache libffi tzdata
 COPY --from=builder /venv /venv
-COPY docker-entrypoint.sh homebridge-prometheus-exporter ./
+COPY uwsgi.ini docker-entrypoint.sh src ./
 
-ENTRYPOINT ["uwsgi", "--ini", "uwsgi.ini"]
+CMD ["./docker-entrypoint.sh"]
